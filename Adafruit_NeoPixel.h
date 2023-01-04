@@ -47,19 +47,50 @@
 #ifdef USE_TINYUSB // For Serial when selecting TinyUSB
 #include <Adafruit_TinyUSB.h>
 #endif
-
 #endif
-
 #ifdef TARGET_LPC1768
 #include <Arduino.h>
 #endif
 
 #if defined(ARDUINO_ARCH_RP2040)
 #include <stdlib.h>
+#if !PICO_NO_HARDWARE
 #include "hardware/pio.h"
+#endif
 #include "hardware/clocks.h"
 #include "rp2040_pio.h"
+#include "pico/stdlib.h"
+#include <cstring>
+
 #endif
+
+#ifndef ARDUINO
+#define PROGMEM
+#define pgm_read_byte(x) *(x)
+
+inline unsigned int micros()
+{
+    unsigned long m = time_us_64();
+    return static_cast<unsigned int>(m);
+}
+
+inline void digitalWrite(int pin, int state)
+{
+  gpio_put(pin, state);
+}
+
+inline void pinMode(int pin, int mode)
+{
+  gpio_set_dir(pin, mode);
+}
+
+#define OUTPUT 1
+#define INPUT 0
+
+#define LOW 0
+#define HIGH 1
+#endif
+
 
 // The order of primary colors in the NeoPixel data stream can vary among
 // device types, manufacturers and even different revisions of the same
